@@ -4,7 +4,6 @@ import com.farmtastic.farm.domain.enums.DeviceType;
 import com.farmtastic.farm.domain.enums.ModelType;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -14,7 +13,6 @@ import java.util.List;
 @Entity
 @Table(name = "devices")
 @Getter
-@Setter
 public class Device {
 
     @Id
