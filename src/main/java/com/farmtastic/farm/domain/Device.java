@@ -1,9 +1,9 @@
 package com.farmtastic.farm.domain;
 
 import com.farmtastic.farm.domain.enums.DeviceType;
+import com.farmtastic.farm.domain.enums.ModelType;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -13,7 +13,6 @@ import java.util.List;
 @Entity
 @Table(name = "devices")
 @Getter
-@Setter
 public class Device {
 
     @Id
@@ -28,8 +27,9 @@ public class Device {
     @Column(name = "d_type", nullable = false)
     private DeviceType dType;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "m_type", nullable = false)
-    private String mType; // 모델 타입은 종류가 많을 수 있어 String으로 처리
+    private ModelType mType; // 모델 타입은 종류가 많을 수 있어 String으로 처리
 
     @Column(name = "pin_number")
     private Integer pinNumber;
