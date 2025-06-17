@@ -1,4 +1,6 @@
 package com.farmtastic.farm.repository;
 
-public interface ZoneRepository {
-}
+import com.farmtastic.farm.domain.Zone;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ZoneRepository extends JpaRepository<Zone, Long> { }
