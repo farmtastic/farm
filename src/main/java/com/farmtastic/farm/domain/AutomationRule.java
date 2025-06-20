@@ -1,6 +1,5 @@
 package com.farmtastic.farm.domain;
 
-import com.farmtastic.farm.dto.AutomationRuleDTO;
 import jakarta.persistence.*;
 import lombok.*;
 

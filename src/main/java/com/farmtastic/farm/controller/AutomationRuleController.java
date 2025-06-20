@@ -17,7 +17,7 @@ import java.util.List;
 public class AutomationRuleController {
 
 
-    private AutomationRuleService automationRuleService;
+    private final AutomationRuleService automationRuleService;
 
 
     //규칙 전체 목록 조회
