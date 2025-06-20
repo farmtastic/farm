@@ -1,7 +1,9 @@
-package com.farmtastic.farm;
+package com.farmtastic.farm.repository;
 
 import com.farmtastic.farm.domain.AutomationRule;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface RuleRepository extends JpaRepository<AutomationRule, Long> {
 }

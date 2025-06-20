@@ -1,8 +1,8 @@
 package com.farmtastic.farm.domain;
 
+import com.farmtastic.farm.dto.AutomationRuleDTO;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -10,6 +10,9 @@ import java.math.BigDecimal;
 @Table(name = "automation_rules")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AutomationRule {
 
     @Id
@@ -26,7 +29,7 @@ public class AutomationRule {
     @Column(name = "threshold_value", nullable = false, precision = 10, scale = 2)
     private BigDecimal thresholdValue;
 
-    @Column(name = "action_command", nullable = false, length = 50)
+    @Column(name = "action_command", nullable = false, length = 500)
     private String actionCommand; // 예: "ON", "OFF"
 
     @Column(name = "is_active", nullable = false)
@@ -41,6 +44,4 @@ public class AutomationRule {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "actuator_id", nullable = false)
     private Device actuator;
-
-
 }

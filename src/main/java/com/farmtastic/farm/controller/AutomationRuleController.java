@@ -1,20 +1,23 @@
 package com.farmtastic.farm.controller;
 
 import com.farmtastic.farm.domain.AutomationRule;
+import com.farmtastic.farm.dto.AutomationRuleDTO;
 import com.farmtastic.farm.service.AutomationRuleService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Slf4j
-@RestController("/api/rules")
+@RestController
+@RequestMapping("/api/rules")
+@RequiredArgsConstructor
 public class AutomationRuleController {
 
-    @Autowired
-    AutomationRuleService automationRuleService;
+
+    private AutomationRuleService automationRuleService;
 
 
     //규칙 전체 목록 조회
@@ -27,20 +30,22 @@ public class AutomationRuleController {
 
     //규칙 생성
     @PostMapping
-    public AutomationRule insertRule(@RequestBody AutomationRule dto){
+    public ResponseEntity<AutomationRuleDTO> insertRule(@RequestBody AutomationRuleDTO dto){
         log.info("rule insert");
-        return automationRuleService.createRule(dto);
+        AutomationRuleDTO rule = automationRuleService.createRule(dto);
+        return ResponseEntity.ok(rule);
     }
 
     //규칙 수정
     @PutMapping("/{id}")
-    public AutomationRule updateRule(AutomationRule dto, @PathVariable Long id){
+    public ResponseEntity<AutomationRuleDTO> updateRule(AutomationRuleDTO dto, @PathVariable Long id){
         log.info("rule update");
-        return automationRuleService.updateRule(dto, id);
+        AutomationRuleDTO rule = automationRuleService.updateRule(dto, id);
+        return ResponseEntity.ok(rule);
     }
 
     //규칙 삭제
-    @DeleteMapping("{/id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteRule(@PathVariable Long id){
         log.info("rule delete");
 
