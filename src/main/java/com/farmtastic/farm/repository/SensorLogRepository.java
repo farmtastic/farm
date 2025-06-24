@@ -22,5 +22,6 @@ public interface SensorLogRepository extends JpaRepository<SensorLog, Long> {
     List<SensorLog> findLatestLogsForEachDeviceInZone(@Param("zoneId") Long zoneId);
 
     // 특정 Device의 SensorLog 이력을 최신순으로 조회
+    @Query("SELECT sl FROM SensorLog sl WHERE sl.device.deviceId = :deviceId ORDER BY sl.logTime DESC")
     List<SensorLog> findByDeviceIdOrderByLogTimeDesc(Long deviceId, Pageable pageable);
 }
