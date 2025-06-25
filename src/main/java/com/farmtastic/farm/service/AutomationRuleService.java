@@ -1,6 +1,7 @@
 package com.farmtastic.farm.service;
 
 import com.farmtastic.farm.domain.Device;
+import com.farmtastic.farm.domain.enums.DeviceType;
 import com.farmtastic.farm.dto.AutomationRuleDTO;
 import com.farmtastic.farm.repository.DeviceRepository;
 import com.farmtastic.farm.repository.AutomationRuleRepository;
@@ -25,9 +26,12 @@ public class AutomationRuleService {
     public AutomationRuleDTO createRule(AutomationRuleDTO dto) {
         log.info("createRule");
 
-        Device sensor = deviceRepository.findById((long)dto.getSensorId())
+        Device sensor =  deviceRepository.findById((long) dto.getSensorId())
+                .filter(d -> d.getDType() == DeviceType.SENSOR)
                 .orElseThrow(()-> new IllegalArgumentException("센서 없음"));
-        Device actuator = deviceRepository.findById((long) dto.getActuatorId())
+
+        Device actuator =  deviceRepository.findById((long) dto.getActuatorId())
+                .filter(d -> d.getDType() == DeviceType.ACTUATOR)
                 .orElseThrow(()-> new IllegalArgumentException("엑추에이터 없음"));
 
         AutomationRule rule = AutomationRule.builder()
@@ -40,9 +44,9 @@ public class AutomationRuleService {
                 .actuator(actuator)
                 .build();
 
-        automationRuleRepository.save(rule);
+        AutomationRule saved = automationRuleRepository.save(rule);
 
-        return dto;
+        return AutomationRuleDTO.fromEntity(saved);
     }
 
 
@@ -53,40 +57,37 @@ public class AutomationRuleService {
         AutomationRule rule = automationRuleRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("규칙 없음"));
 
-        Device sensor = deviceRepository.findById((long) dto.getSensorId())
-                .orElseThrow(() -> new IllegalArgumentException("센서 없음"));
+        Device sensor =  deviceRepository.findById((long) dto.getSensorId())
+                .filter(d -> d.getDType() == DeviceType.SENSOR)
+                .orElseThrow(()-> new IllegalArgumentException("센서 없음"));
 
-        Device actuator = deviceRepository.findById((long) dto.getActuatorId())
-                .orElseThrow(() -> new IllegalArgumentException("액추에이터 없음"));
+        Device actuator =  deviceRepository.findById((long) dto.getActuatorId())
+                .filter(d -> d.getDType() == DeviceType.ACTUATOR)
+                .orElseThrow(()-> new IllegalArgumentException("엑추에이터 없음"));
 
-        rule.setRuleName(dto.getRuleName());
-        rule.setThresholdValue(dto.getThreshold());
-        rule.setActionCommand(dto.getCommand());
-        rule.setConditionOp(dto.getConditionOp());
-        rule.setIsActive(dto.getActive());
-        rule.setSensor(sensor);
-        rule.setActuator(actuator);
+        AutomationRule updateRule = AutomationRule.builder()
+                .ruleName(rule.getRuleName())
+                .thresholdValue(rule.getThresholdValue())
+        .actionCommand(rule.getActionCommand())
+        .conditionOp(rule.getConditionOp())
+        .isActive(rule.getIsActive())
+        .sensor(sensor)
+        .actuator(actuator)
+                .build();
 
-        automationRuleRepository.save(rule);
+        AutomationRule updated = automationRuleRepository.save(rule);
 
 
-        return dto;
+        return AutomationRuleDTO.fromEntity(updated);
     }
 
-    //delete
-    public void deleteRule(Long id) {
-        log.info("deleteRule");
-
-        if (!automationRuleRepository.existsById(id)) {
-            throw new IllegalArgumentException("규칙을 찾을 수 없음");
-        }
-        automationRuleRepository.deleteById(id);
-    }
 
     //view
     public List<AutomationRule> getAllRule() {
         log.info("getAllRule");
         return automationRuleRepository.findAll();
     }
+
+
 
 }

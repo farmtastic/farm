@@ -22,4 +22,17 @@ public class AutomationRuleDTO {
     private String command;
     private Boolean active;
 
+    public static AutomationRuleDTO fromEntity(AutomationRule rule) {
+        return AutomationRuleDTO.builder()
+                .ruleName(rule.getRuleName())
+                .sensorId(rule.getSensor().getDeviceId().intValue())
+                .conditionOp(rule.getConditionOp())
+                .threshold(rule.getThresholdValue())
+                .actuatorId(rule.getActuator().getDeviceId().intValue())
+                .command(rule.getActionCommand())
+                .active(rule.getIsActive())
+                .build();
+    }
+
+
 }
