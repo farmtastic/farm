@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "sensor_logs")
 @Getter
-@Setter
 public class SensorLog {
 
     @Id
