@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 @Builder
 public class AutomationRuleDTO {
 
+    private int ruleId;
     private String ruleName;
     private int sensorId;
     private String conditionOp;
@@ -25,6 +26,7 @@ public class AutomationRuleDTO {
 
     public static AutomationRuleDTO fromEntity(AutomationRule rule) {
         return AutomationRuleDTO.builder()
+                .ruleId(rule.getRuleId().intValue())
                 .ruleName(rule.getRuleName())
                 .sensorId(rule.getSensor().getDeviceId().intValue())
                 .conditionOp(rule.getConditionOp())
@@ -35,15 +37,5 @@ public class AutomationRuleDTO {
                 .build();
     }
 
-    public void update(String ruleName, String conditionOp, BigDecimal thresholdValue,
-                       String actionCommand, Device sensor, Device actuator, Boolean isActive) {
-        this.ruleName = ruleName;
-        this.conditionOp = conditionOp;
-        this.threshold = thresholdValue;
-        this.command = actionCommand;
-        this.sensorId = sensor.getDeviceId().intValue();
-        this.actuatorId = actuator.getDeviceId().intValue();
-        this.active = isActive;
-    }
 
 }

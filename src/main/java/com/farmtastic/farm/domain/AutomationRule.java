@@ -44,4 +44,17 @@ public class AutomationRule {
     @JoinColumn(name = "actuator_id", nullable = false)
     private Device actuator;
 
+
+    public void update(String ruleName, String conditionOp, BigDecimal thresholdValue,
+                       String actionCommand, Device sensor, Device actuator, Boolean isActive) {
+        this.ruleName = ruleName;
+        this.conditionOp = conditionOp;
+        this.thresholdValue = thresholdValue;
+        this.actionCommand = actionCommand;
+        this.sensor = sensor;
+        this.actuator = actuator;
+        this.isActive = isActive;
+    }
+
+
 }

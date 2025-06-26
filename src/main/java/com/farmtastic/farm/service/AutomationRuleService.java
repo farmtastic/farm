@@ -66,7 +66,7 @@ public class AutomationRuleService {
                 .filter(d -> d.getDType() == DeviceType.ACTUATOR)
                 .orElseThrow(()-> new IllegalArgumentException("엑추에이터 없음"));
 
-        dto.update(
+        rule.update(
                 dto.getRuleName(),
                 dto.getConditionOp(),
                 dto.getThreshold(),
