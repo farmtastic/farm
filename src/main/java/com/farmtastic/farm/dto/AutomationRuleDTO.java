@@ -1,6 +1,7 @@
 package com.farmtastic.farm.dto;
 
 import com.farmtastic.farm.domain.AutomationRule;
+import com.farmtastic.farm.domain.Device;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,5 +35,15 @@ public class AutomationRuleDTO {
                 .build();
     }
 
+    public void update(String ruleName, String conditionOp, BigDecimal thresholdValue,
+                       String actionCommand, Device sensor, Device actuator, Boolean isActive) {
+        this.ruleName = ruleName;
+        this.conditionOp = conditionOp;
+        this.threshold = thresholdValue;
+        this.command = actionCommand;
+        this.sensorId = sensor.getDeviceId().intValue();
+        this.actuatorId = actuator.getDeviceId().intValue();
+        this.active = isActive;
+    }
 
 }

@@ -43,4 +43,5 @@ public class AutomationRule {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "actuator_id", nullable = false)
     private Device actuator;
+
 }

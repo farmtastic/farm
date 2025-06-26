@@ -4,9 +4,9 @@ spring:
     # PostgreSQL JDBC ???? ??? ??
     driver-class-name: org.postgresql.Driver
     # ?????? ?? URL
-    url: jdbc:postgresql://localhost:5432/smartfarm_db
+    url: jdbc:postgresql://localhost:5432/smartfarm
     # ??? ??
-    username: smartfarm_user
+    username: postgre
     # ??? ????
     password: 1234
 

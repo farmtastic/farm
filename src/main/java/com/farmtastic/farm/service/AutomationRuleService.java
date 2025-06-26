@@ -51,6 +51,7 @@ public class AutomationRuleService {
 
 
     //update
+    @Transactional
     public AutomationRuleDTO updateRule(AutomationRuleDTO dto, Long id) {
         log.info("updateRule");
 
@@ -65,15 +66,15 @@ public class AutomationRuleService {
                 .filter(d -> d.getDType() == DeviceType.ACTUATOR)
                 .orElseThrow(()-> new IllegalArgumentException("엑추에이터 없음"));
 
-        AutomationRule updateRule = AutomationRule.builder()
-                .ruleName(rule.getRuleName())
-                .thresholdValue(rule.getThresholdValue())
-        .actionCommand(rule.getActionCommand())
-        .conditionOp(rule.getConditionOp())
-        .isActive(rule.getIsActive())
-        .sensor(sensor)
-        .actuator(actuator)
-                .build();
+        dto.update(
+                dto.getRuleName(),
+                dto.getConditionOp(),
+                dto.getThreshold(),
+                dto.getCommand(),
+                sensor,
+                actuator,
+                dto.getActive()
+        );
 
         AutomationRule updated = automationRuleRepository.save(rule);
 
