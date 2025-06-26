@@ -22,10 +22,12 @@ public class AutomationRuleController {
 
     //규칙 전체 목록 조회
     @GetMapping
-    public List<AutomationRule> getRuleView(){
+    public List<AutomationRuleDTO> getRuleView(){
         log.info("rule view");
 
-        return automationRuleService.getAllRule();
+        return automationRuleService.getAllRule().stream()
+                .map(AutomationRuleDTO::fromEntity)
+                .toList();
     }
 
     //규칙 생성
