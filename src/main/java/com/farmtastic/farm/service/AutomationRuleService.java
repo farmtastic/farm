@@ -92,7 +92,13 @@ public class AutomationRuleService {
 
     //delete
     @Transactional
-    public void deleteRuleById(Long id) {
-        automationRuleRepository.deleteById(id);
+    public String deleteRuleById(Long id) {
+
+        AutomationRule rule = automationRuleRepository.findById(id)
+                        .orElseThrow(()-> new IllegalArgumentException("해당 id가 존재하는 규칙이 없습니다"));
+
+
+        automationRuleRepository.delete(rule);
+        return "임계점 삭제 완료";
     }
 }

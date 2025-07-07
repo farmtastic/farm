@@ -41,18 +41,19 @@ public class AutomationRuleController {
 
     //규칙 수정
     @PutMapping("/update/{id}")
-    public ResponseEntity<AutomationRuleDTO> updateRule(@RequestBody AutomationRuleDTO dto, @PathVariable Long id){
+    public ResponseEntity<String> updateRule(@RequestBody AutomationRuleDTO dto, @PathVariable Long id){
         log.info("rule update");
         AutomationRuleDTO updateRule = automationRuleService.updateRule(dto, id);
-        return ResponseEntity.ok(updateRule);
+        return ResponseEntity.ok("수정 완료");
     }
 
     //규칙 삭제
-    @PostMapping("/delete/{id}")
-    public ResponseEntity<String> deleteRule(@PathVariable Long id){
-        log.info("delte rule");
-        automationRuleService.deleteRuleById(id);
-        return ResponseEntity.noContent().build();
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteRule( @PathVariable Long id){
+        log.info("delete rule");
+        String deleteRule = automationRuleService.deleteRuleById( id);
+
+        return ResponseEntity.ok(deleteRule);
     }
 
 
