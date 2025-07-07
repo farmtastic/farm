@@ -5,6 +5,7 @@ import com.farmtastic.farm.dto.AutomationRuleDTO;
 import com.farmtastic.farm.service.AutomationRuleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.postgresql.util.SharedTimer;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +45,14 @@ public class AutomationRuleController {
         log.info("rule update");
         AutomationRuleDTO updateRule = automationRuleService.updateRule(dto, id);
         return ResponseEntity.ok(updateRule);
+    }
+
+    //규칙 삭제
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<String> deleteRule(@PathVariable Long id){
+        log.info("delte rule");
+        automationRuleService.deleteRuleById(id);
+        return ResponseEntity.noContent().build();
     }
 
 

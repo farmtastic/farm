@@ -90,5 +90,9 @@ public class AutomationRuleService {
     }
 
 
-
+    //delete
+    @Transactional
+    public void deleteRuleById(Long id) {
+        automationRuleRepository.deleteById(id);
+    }
 }
