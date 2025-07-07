@@ -1,8 +1,7 @@
 package com.farmtastic.farm.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
@@ -11,6 +10,9 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "sensor_logs")
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SensorLog {
 
     @Id

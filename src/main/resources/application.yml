@@ -1,10 +1,15 @@
 spring:
+  # mqtt
+  mqtt:
+    url: tcp://localhost:1883  # 로컬 Mosquitto 브로커 주소 (환경에 맞게 변경)
+    clientId: spring-boot-server
+
   # --- ?????? ?? ?? ---
   datasource:
     # PostgreSQL JDBC ???? ??? ??
     driver-class-name: org.postgresql.Driver
     # ?????? ?? URL
-    url: jdbc:postgresql://localhost:5432/smartfarm
+    url: jdbc:postgresql://localhost:5432/farmstatic
     # ??? ??
     username: postgres
     # ??? ????
