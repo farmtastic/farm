@@ -41,10 +41,10 @@ public class AutomationRuleController {
 
     //규칙 수정
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateRule(@RequestBody AutomationRuleDTO dto, @PathVariable Long id){
+    public ResponseEntity<AutomationRuleDTO> updateRule(@RequestBody AutomationRuleDTO dto, @PathVariable Long id){
         log.info("rule update");
         AutomationRuleDTO updateRule = automationRuleService.updateRule(dto, id);
-        return ResponseEntity.ok("수정 완료");
+        return ResponseEntity.ok(updateRule);
     }
 
     //규칙 삭제
