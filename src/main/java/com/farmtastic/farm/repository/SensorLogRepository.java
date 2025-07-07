@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SensorLogRepository extends JpaRepository<SensorLog, Long> {
@@ -28,4 +29,5 @@ public interface SensorLogRepository extends JpaRepository<SensorLog, Long> {
             ")")
     List<SensorLog> findLatestLogsForEachDeviceInZone(@Param("zoneId") Long zoneId);
 
+    Optional<SensorLog> findByDevice(Long deviceId);
 }
