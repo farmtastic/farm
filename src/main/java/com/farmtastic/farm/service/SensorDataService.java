@@ -35,7 +35,7 @@ public class SensorDataService {
         // ModelType 별 최신 값을 Map으로 구성
         Map<ModelType, ZoneDashboardResponse.LatestValue> latestValuesMap = latestLogs.stream()
                 .collect(Collectors.toMap(
-                        log -> log.getDevice().getMType(),
+                        log -> log.getDevice().getModelType(),
                         log -> ZoneDashboardResponse.LatestValue.builder()
                                 .value(log.getLogValue().doubleValue())
                                 .timestamp(log.getLogTime())
@@ -62,7 +62,7 @@ public class SensorDataService {
         // 가져온 로그들을 ModelType을 기준으로 그룹화
         Map<ModelType, List<ZoneDashboardResponse.HistoryPoint>> historyValuesMap = allLogsInZone.stream()
                 .collect(Collectors.groupingBy(
-                        log -> log.getDevice().getMType(),
+                        log -> log.getDevice().getModelType(),
                         Collectors.mapping(
                                 log -> ZoneDashboardResponse.HistoryPoint.builder()
                                         .timestamp(log.getLogTime())

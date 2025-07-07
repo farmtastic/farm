@@ -28,8 +28,8 @@ public class Device {
     private DeviceType dType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "m_type", nullable = false)
-    private ModelType mType; // 모델 타입은 종류가 많을 수 있어 String으로 처리
+    @Column(name = "model_type", nullable = false)
+    private ModelType modelType; // 모델 타입은 종류가 많을 수 있어 String으로 처리
 
     @Column(name = "pin_number")
     private Integer pinNumber;

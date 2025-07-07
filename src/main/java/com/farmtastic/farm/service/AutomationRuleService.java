@@ -38,22 +38,22 @@ public class AutomationRuleService {
         log.info("createRule");
 
         Device sensor = deviceRepository.findById((long) dto.getSensorId())
-                .filter(d -> d.getDType() == DeviceType.SENSOR)
-                .orElseThrow(() -> new IllegalArgumentException("센서 없음"));
+            .filter(d -> d.getDType() == DeviceType.SENSOR)
+            .orElseThrow(() -> new IllegalArgumentException("센서 없음"));
 
         Device actuator = deviceRepository.findById((long) dto.getActuatorId())
-                .filter(d -> d.getDType() == DeviceType.ACTUATOR)
-                .orElseThrow(() -> new IllegalArgumentException("엑추에이터 없음"));
+            .filter(d -> d.getDType() == DeviceType.ACTUATOR)
+            .orElseThrow(() -> new IllegalArgumentException("엑추에이터 없음"));
 
         AutomationRule rule = AutomationRule.builder()
-                .ruleName(dto.getRuleName())
-                .conditionOp(dto.getConditionOp())
-                .thresholdValue(dto.getThreshold())
-                .actionCommand(dto.getCommand())
-                .isActive(dto.getActive())
-                .sensor(sensor)
-                .actuator(actuator)
-                .build();
+            .ruleName(dto.getRuleName())
+            .conditionOp(dto.getConditionOp())
+            .thresholdValue(dto.getThreshold())
+            .actionCommand(dto.getCommand())
+            .isActive(dto.getActive())
+            .sensor(sensor)
+            .actuator(actuator)
+            .build();
 
         AutomationRule saved = automationRuleRepository.save(rule);
 
@@ -67,28 +67,27 @@ public class AutomationRuleService {
         log.info("updateRule");
 
         AutomationRule rule = automationRuleRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("규칙 없음"));
+            .orElseThrow(() -> new IllegalArgumentException("규칙 없음"));
 
         Device sensor = deviceRepository.findById((long) dto.getSensorId())
-                .filter(d -> d.getDType() == DeviceType.SENSOR)
-                .orElseThrow(() -> new IllegalArgumentException("센서 없음"));
+            .filter(d -> d.getDType() == DeviceType.SENSOR)
+            .orElseThrow(() -> new IllegalArgumentException("센서 없음"));
 
         Device actuator = deviceRepository.findById((long) dto.getActuatorId())
-                .filter(d -> d.getDType() == DeviceType.ACTUATOR)
-                .orElseThrow(() -> new IllegalArgumentException("엑추에이터 없음"));
+            .filter(d -> d.getDType() == DeviceType.ACTUATOR)
+            .orElseThrow(() -> new IllegalArgumentException("엑추에이터 없음"));
 
         rule.update(
-                dto.getRuleName(),
-                dto.getConditionOp(),
-                dto.getThreshold(),
-                dto.getCommand(),
-                sensor,
-                actuator,
-                dto.getActive()
+            dto.getRuleName(),
+            dto.getConditionOp(),
+            dto.getThreshold(),
+            dto.getCommand(),
+            sensor,
+            actuator,
+            dto.getActive()
         );
 
         AutomationRule updated = automationRuleRepository.save(rule);
-
 
         return AutomationRuleDTO.fromEntity(updated);
     }
@@ -106,8 +105,7 @@ public class AutomationRuleService {
     public String deleteRuleById(Long id) {
 
         AutomationRule rule = automationRuleRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id가 존재하는 규칙이 없습니다"));
-
+            .orElseThrow(() -> new IllegalArgumentException("해당 id가 존재하는 규칙이 없습니다"));
 
         automationRuleRepository.delete(rule);
         return "임계점 삭제 완료";
@@ -122,7 +120,8 @@ public class AutomationRuleService {
         log.info("currentValue:{}", currentValue);
 
         //1. 현재 센서에 연결된 모든 활성화된 자동화 규칙 조회
-        List<AutomationRule> rules = automationRuleRepository.findBySensorAndIsActive(sensorId);
+        List<AutomationRule> rules = automationRuleRepository.findBySensorDeviceIdAndIsActive(sensorId,
+            true);
 
         log.info("rules:{}", rules);
 
@@ -164,7 +163,8 @@ public class AutomationRuleService {
                 //MQTT 메세지 전송
                 mqttGateway.sendToMqtt(controlTopic, command);
 
-                log.info("규칙 '{}' 충족 Topic:{}, Command:{} 메세지 발행", rule.getRuleName(), controlTopic, command);
+                log.info("규칙 '{}' 충족 Topic:{}, Command:{} 메세지 발행", rule.getRuleName(), controlTopic,
+                    command);
 
                 //4. 현재 센서값이 임계값을 초과하면 엑츄에이터 on 상태로 유지합니다.
                 checkControlActuator(rule, currentValue, controlTopic);
@@ -175,7 +175,8 @@ public class AutomationRuleService {
 
 
     //임계값을 초과하면 지정된 임계값에서 -1까지 엑츄에이터 ON 상태로 유지
-    private void checkControlActuator(AutomationRule rule, double currentValue, String controlTopic) {
+    private void checkControlActuator(AutomationRule rule, double currentValue,
+        String controlTopic) {
         double thresholdValue = rule.getThresholdValue().doubleValue();
         double lowerLimit = thresholdValue - 1;
 
@@ -207,7 +208,7 @@ public class AutomationRuleService {
 
     private double getSensorValue(Long deviceId) {
 
-        Optional<SensorLog> sensorLogOptional = sensorLogRepository.findByDevice(deviceId);
+        Optional<SensorLog> sensorLogOptional = sensorLogRepository.findByDeviceDeviceId(deviceId);
 
         if (sensorLogOptional.isPresent()) {
             SensorLog sensor = sensorLogOptional.get();

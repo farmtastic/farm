@@ -29,5 +29,5 @@ public interface SensorLogRepository extends JpaRepository<SensorLog, Long> {
             ")")
     List<SensorLog> findLatestLogsForEachDeviceInZone(@Param("zoneId") Long zoneId);
 
-    Optional<SensorLog> findByDevice(Long deviceId);
+    Optional<SensorLog> findByDeviceDeviceId(Long deviceId);
 }

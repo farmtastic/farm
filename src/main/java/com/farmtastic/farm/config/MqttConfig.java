@@ -1,6 +1,8 @@
 package com.farmtastic.farm.config;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.eclipse.paho.client.mqttv3.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -64,9 +66,9 @@ public class MqttConfig {
     @Bean
     public MessageProducer mqttInbound() {
         // C++이 보내는 센서 데이터를 수신할 토픽 (구독할 토픽)
-        String[] topics = {"farm/+/sensor/+/data"};
+        String topic = "farm/data/#";
         MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getClientId() + "_sub", mqttClientFactory(), topics);
+                new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getClientId() + "_sub", mqttClientFactory(), topic);
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(1);
