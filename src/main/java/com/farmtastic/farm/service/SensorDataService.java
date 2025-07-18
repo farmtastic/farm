@@ -69,6 +69,7 @@ public class SensorDataService {
                                 log -> ZoneHistoryResponse.HistoryPoint.builder()
                                         .timestamp(log.getLogTime())
                                         .value(log.getLogValue().doubleValue())
+                                        .threshold(log.getThresholdValue() != null ? log.getThresholdValue().doubleValue() : null)
                                         .build(),
                                 Collectors.toList()
                         )

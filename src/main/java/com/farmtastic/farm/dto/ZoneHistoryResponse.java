@@ -19,6 +19,7 @@ public class ZoneHistoryResponse {
     @Builder
     public static class HistoryPoint {
         private LocalDateTime timestamp;
+        private Double threshold;
         private Double value;
     }
 }
