@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,14 +24,13 @@ public class SensorDataService {
 
     private final SensorLogRepository sensorLogRepository;
     private final ZoneRepository zoneRepository;
-    private static final int HISTORY_LIMIT = 100;
 
     // 특정 구역의 최신 센서 데이터를 조회
     public ZoneDashboardResponse getLatestData(Long zoneId) {
         Zone zone = zoneRepository.findById(zoneId)
                 .orElseThrow(() -> new EntityNotFoundException("Zone not found with id: " + zoneId));
 
-        List<SensorLog> latestLogs = sensorLogRepository.findLatestLogsForEachDeviceInZone(zoneId);
+        List<SensorLog> latestLogs = sensorLogRepository.findLatestLogs(zoneId);
 
         // ModelType 별 최신 값을 Map으로 구성
         Map<ModelType, ZoneDashboardResponse.LatestValue> latestValuesMap = latestLogs.stream()
@@ -51,16 +51,18 @@ public class SensorDataService {
                 .build();
     }
 
-    // 특정 구역의 센서 데이터 이력을 조회
+    // 특정 구역의 최근 3시간 센서 데이터 이력을 조회
     public ZoneDashboardResponse getHistoryData(Long zoneId) {
         Zone zone = zoneRepository.findById(zoneId)
                 .orElseThrow(() -> new EntityNotFoundException("Zone not found with id: " + zoneId));
 
-        // 현재는 해당 파라미터 없으므로 모든 로그를 가져온다고 가정
-        List<SensorLog> allLogsInZone = sensorLogRepository.findSensorLogsForZoneHistory(zoneId, DeviceType.SENSOR);
+        // 조회 시작 시간을 현재로부터 3시간 전으로 설정
+        LocalDateTime startTime = LocalDateTime.now().minusHours(3);
+
+        List<SensorLog> recentLogs = sensorLogRepository.findLogsAfter(zoneId, DeviceType.SENSOR, startTime);
 
         // 가져온 로그들을 ModelType을 기준으로 그룹화
-        Map<ModelType, List<ZoneDashboardResponse.HistoryPoint>> historyValuesMap = allLogsInZone.stream()
+        Map<ModelType, List<ZoneDashboardResponse.HistoryPoint>> historyValuesMap = recentLogs.stream()
                 .collect(Collectors.groupingBy(
                         log -> log.getDevice().getModelType(),
                         Collectors.mapping(
@@ -75,7 +77,6 @@ public class SensorDataService {
         return ZoneDashboardResponse.builder()
                 .zoneId(zone.getZoneId())
                 .zoneName(zone.getZoneName())
-                .latestValues(null)
                 .historyValues(historyValuesMap)
                 .build();
     }
