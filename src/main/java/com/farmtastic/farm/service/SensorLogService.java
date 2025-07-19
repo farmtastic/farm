@@ -1,9 +1,11 @@
 package com.farmtastic.farm.service;
 
+import com.farmtastic.farm.domain.AutomationRule;
 import com.farmtastic.farm.domain.Device;
 import com.farmtastic.farm.domain.SensorLog;
 import com.farmtastic.farm.domain.enums.ModelType;
 import com.farmtastic.farm.dto.LogReceiveDto;
+import com.farmtastic.farm.repository.AutomationRuleRepository;
 import com.farmtastic.farm.repository.DeviceRepository;
 import com.farmtastic.farm.repository.SensorLogRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,6 +24,7 @@ public class SensorLogService {
     private final SensorLogRepository sensorLogRepository;
     private final DeviceRepository deviceRepository;
     private final AutomationRuleService automationRuleService;
+    private final AutomationRuleRepository automationRuleRepository;
 
     // MQTT로 수신된 센서 데이터(DTO)를 SensorLog 엔티티로 변환하여 저장
     @Transactional
@@ -31,10 +34,18 @@ public class SensorLogService {
             .orElseThrow(() -> new EntityNotFoundException(
                 "Device not found with id: " + logDto.getDeviceId()));
 
+        BigDecimal currentThreshold = automationRuleRepository
+                .findBySensorAndIsActiveTrue(device)
+                .stream()
+                .findFirst() // List에서 첫 번째 요소만 가져옴
+                .map(AutomationRule::getThresholdValue)
+                .orElse(null); // 규칙이 없으면 null
+
         SensorLog newSensorLog = SensorLog.builder()
-            .device(device)
-            .logValue(logDto.getValue())
-            .build();
+                .device(device)
+                .logValue(logDto.getValue())
+                .thresholdValue(currentThreshold)
+                .build();
 
         // 데이터베이스에 저장
         sensorLogRepository.save(newSensorLog);
@@ -55,11 +66,21 @@ public class SensorLogService {
                 // 4. Zone 이름과 ModelType으로 해당하는 Device 정보 조회
                 deviceRepository.findByZoneZoneNameAndModelType(zoneName, modelType)
                     .ifPresent(device -> {
-                        // 5. Device를 찾았다면 SensorLog 저장
+
+                        BigDecimal currentThreshold = automationRuleRepository
+                                .findBySensorAndIsActiveTrue(device)
+                                .stream()
+                                .findFirst()
+                                .map(AutomationRule::getThresholdValue)
+                                .orElse(null);
+
+                        // SensorLog 저장
                         SensorLog sensorLog = SensorLog.builder()
-                            .device(device)
-                            .logValue(value)
-                            .build();
+                                .device(device)
+                                .logValue(value)
+                                .thresholdValue(currentThreshold)
+                                .build();
+
                         sensorLogRepository.save(sensorLog);
 
                         // 6. (중요) 해당 센서에 대한 자동화 규칙 검사 및 실행 로직 호출

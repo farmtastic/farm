@@ -27,6 +27,10 @@ public class SensorLog {
     @Column(name = "log_value", precision = 10, scale = 2) // NUMERIC(10,2) 매핑
     private BigDecimal logValue;
 
+    // 로그가 기록될 당시의 임계값을 저장할 필드 (비정규화)
+    @Column(name = "threshold_value", precision = 10, scale = 2)
+    private BigDecimal thresholdValue;
+
     // SensorLogs(N) -> Device(1) 관계
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "device_id", nullable = false)
