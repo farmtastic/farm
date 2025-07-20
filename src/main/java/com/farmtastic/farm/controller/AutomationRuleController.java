@@ -60,16 +60,16 @@ public class AutomationRuleController {
     }
 
 
-//      private final SensorLogService sensorLogService;
+      private final SensorLogService sensorLogService;
 
     //자동제어 명령어 테스트를 위한 post
-//    @PostMapping("/test")
-//    public ResponseEntity<String> testSensorData(@RequestBody Map<String, BigDecimal> sensorDataMap) {
-//        log.info("test 시작 ");
-//        String testTopic = "farm/data/zone-A"; // zone 이름은 고정 테스트
-//        sensorLogService.saveSensorLogsFromMap(testTopic, sensorDataMap);
-//        return ResponseEntity.ok("센서 데이터 수신 및 처리 완료");
-//    }
+    @PostMapping("/test")
+    public ResponseEntity<String> testSensorData(@RequestBody Map<String, BigDecimal> sensorDataMap) {
+        log.info("test 시작 ");
+        String testTopic = "farm/data/zone-A"; // zone 이름은 고정 테스트
+        sensorLogService.saveSensorLogsFromMap(testTopic, sensorDataMap);
+        return ResponseEntity.ok("센서 데이터 수신 및 처리 완료");
+    }
 
 
 }
