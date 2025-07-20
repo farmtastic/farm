@@ -14,4 +14,5 @@ public interface AutomationRuleRepository extends JpaRepository<AutomationRule, 
     // 특정 센서에 연결된 활성화된 모든 자동화 규칙을 찾는 메서드
     List<AutomationRule> findBySensorAndIsActiveTrue(Device sensor);
     List<AutomationRule> findBySensorDeviceIdAndIsActive(Long sensorId, boolean isActive);
+
 }

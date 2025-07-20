@@ -84,7 +84,8 @@ public class SensorLogService {
                         sensorLogRepository.save(sensorLog);
 
                         // 6. (중요) 해당 센서에 대한 자동화 규칙 검사 및 실행 로직 호출
-//                        automationRuleService.checkAndExecuteRules(device, value);
+                        automationRuleService.evaluateSensor(device, value);
+
                     });
 
             } catch (IllegalArgumentException e) {

@@ -68,7 +68,7 @@ public class MqttConfig {
     @Bean
     public MessageProducer mqttInbound() {
         // C++이 보내는 센서 데이터를 수신할 토픽 (구독할 토픽)
-        String topic = "farm/data/#";
+        String topic = "farm/data/#"; //센서 데이터(light, ph, water)
         MqttPahoMessageDrivenChannelAdapter adapter =
                 new MqttPahoMessageDrivenChannelAdapter(mqttProperties.getClientId() + "_sub", mqttClientFactory(), topic);
         adapter.setCompletionTimeout(5000);

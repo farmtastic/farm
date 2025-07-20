@@ -3,13 +3,16 @@ package com.farmtastic.farm.controller;
 import com.farmtastic.farm.domain.AutomationRule;
 import com.farmtastic.farm.dto.AutomationRuleDTO;
 import com.farmtastic.farm.service.AutomationRuleService;
+import com.farmtastic.farm.service.SensorLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.postgresql.util.SharedTimer;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -55,6 +58,18 @@ public class AutomationRuleController {
 
         return ResponseEntity.ok(deleteRule);
     }
+
+
+//      private final SensorLogService sensorLogService;
+
+    //자동제어 명령어 테스트를 위한 post
+//    @PostMapping("/test")
+//    public ResponseEntity<String> testSensorData(@RequestBody Map<String, BigDecimal> sensorDataMap) {
+//        log.info("test 시작 ");
+//        String testTopic = "farm/data/zone-A"; // zone 이름은 고정 테스트
+//        sensorLogService.saveSensorLogsFromMap(testTopic, sensorDataMap);
+//        return ResponseEntity.ok("센서 데이터 수신 및 처리 완료");
+//    }
 
 
 }
