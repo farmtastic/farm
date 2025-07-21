@@ -16,8 +16,12 @@ public class MqttCommandPublisher {
 
     //actoator와 명령어를 받아 mqtt 토픽으로 전송하는 메소드
     public void sendCommand(Device actoutor, String command){
-        String topic = "farm/control/zone-A/"
-                + actoutor.getDeviceName().toLowerCase();
+
+        if (actoutor != null || actoutor.getDeviceName()==null){
+            throw new IllegalArgumentException("actuator or dvice == null");
+        }
+        String deviceName = actoutor.getDeviceName().toLowerCase().trim();
+        String topic = "farm/control/zone-A/" + deviceName;
 
         Message<String> message = MessageBuilder.withPayload(command)
                 .setHeader(MqttHeaders.TOPIC, topic)
