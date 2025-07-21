@@ -23,8 +23,8 @@ public class SensorLogService {
 
     private final SensorLogRepository sensorLogRepository;
     private final DeviceRepository deviceRepository;
-    private final AutomationRuleService automationRuleService;
     private final AutomationRuleRepository automationRuleRepository;
+    private final ControlLogService controlLogService;
 
     // MQTT로 수신된 센서 데이터(DTO)를 SensorLog 엔티티로 변환하여 저장
     @Transactional
@@ -84,7 +84,8 @@ public class SensorLogService {
                         sensorLogRepository.save(sensorLog);
 
                         // 6. (중요) 해당 센서에 대한 자동화 규칙 검사 및 실행 로직 호출
-                        automationRuleService.evaluateSensor(device, value);
+                        controlLogService.evaluateSensor(device, value);
+
 
                     });
 

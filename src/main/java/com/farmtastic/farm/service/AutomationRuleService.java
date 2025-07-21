@@ -30,7 +30,6 @@ public class AutomationRuleService {
 
     private final AutomationRuleRepository automationRuleRepository;
     private final DeviceRepository deviceRepository;
-    private final MqttCommandPublisher mqttCommandPublisher;
 
 
     //insert
@@ -112,35 +111,4 @@ public class AutomationRuleService {
         return "임계점 삭제 완료";
     }
 
-    public void evaluateSensor(Device sensorDevice, BigDecimal value) {
-        log.info(" 규칙과 측정값 비교");
-        //1. 해당 센서를 기준으로 활성화된 자동제어 규칙 조회 (ph, 조도, 수위 검색)
-        AutomationRule selectRule = automationRuleRepository.findBySensorAndIsActiveTrue(sensorDevice);
-
-
-        if (selectRule != null && compare(selectRule.getConditionOp(), value, selectRule.getThresholdValue())){
-            if (compare(selectRule.getConditionOp(), value, selectRule.getThresholdValue())){
-                mqttCommandPublisher.sendCommand(selectRule.getActuator(), selectRule.getActionCommand());
-
-                log.info("자동제어 실행: sensor={}, value={}, 조건: '{} {}', -> actuator={}, command={}",
-                        sensorDevice.getDeviceName(), value,
-                        selectRule.getConditionOp(), selectRule.getThresholdValue(),
-                        selectRule.getActuator().getDeviceName(), selectRule.getActionCommand());
-            }
-        }
-
-    }
-
-    private boolean compare(String op,BigDecimal sensorValue, BigDecimal threshold){
-
-        //센서에 넘어온 실시간 측정값 sensorValue와 DB에 저장된 임계값 threshold 비교
-        return switch (op){
-            case ">" -> sensorValue.compareTo(threshold) > 0;
-            case "<" -> sensorValue.compareTo(threshold) < 0;
-            case ">=" -> sensorValue.compareTo(threshold) >= 0;
-            case "<=" -> sensorValue.compareTo(threshold) <= 0;
-            case "==" -> sensorValue.compareTo(threshold) == 0;
-            default -> false;
-        };
-    }
 }
