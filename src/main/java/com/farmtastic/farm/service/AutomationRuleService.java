@@ -115,16 +115,17 @@ public class AutomationRuleService {
     public void evaluateSensor(Device sensorDevice, BigDecimal value) {
         log.info(" 규칙과 측정값 비교");
         //1. 해당 센서를 기준으로 활성화된 자동제어 규칙 조회 (ph, 조도, 수위 검색)
-        List<AutomationRule> rules = automationRuleRepository.findBySensorAndIsActiveTrue(sensorDevice);
+        AutomationRule selectRule = automationRuleRepository.findBySensorAndIsActiveTrue(sensorDevice);
 
-        for (AutomationRule rule: rules){
-            if (compare(rule.getConditionOp(), value, rule.getThresholdValue())){
-                mqttCommandPublisher.sendCommand(rule.getActuator(), rule.getActionCommand());
+
+        if (selectRule != null && compare(selectRule.getConditionOp(), value, selectRule.getThresholdValue())){
+            if (compare(selectRule.getConditionOp(), value, selectRule.getThresholdValue())){
+                mqttCommandPublisher.sendCommand(selectRule.getActuator(), selectRule.getActionCommand());
 
                 log.info("자동제어 실행: sensor={}, value={}, 조건: '{} {}', -> actuator={}, command={}",
                         sensorDevice.getDeviceName(), value,
-                        rule.getConditionOp(), rule.getThresholdValue(),
-                        rule.getActuator().getDeviceName(), rule.getActionCommand());
+                        selectRule.getConditionOp(), selectRule.getThresholdValue(),
+                        selectRule.getActuator().getDeviceName(), selectRule.getActionCommand());
             }
         }
 
