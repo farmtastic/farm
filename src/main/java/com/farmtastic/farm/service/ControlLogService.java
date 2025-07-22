@@ -45,6 +45,7 @@ public class ControlLogService {
         //1. 해당 센서를 기준으로 활성화된 자동제어 규칙 조회 (ph, 조도, 수위 검색)
         AutomationRule selectRule = automationRuleRepository.findBySensorAndIsActiveTrue(sensorDevice);
 
+        //2. 검색된 규칙의 유무 확인
         if (selectRule != null) {
             log.info("센서로 검색된 규칙이름:{}, 임계값:{}, actoutor:{}", selectRule.getRuleName(), selectRule.getThresholdValue(), selectRule.getActuator().getDeviceName() );
 
@@ -56,14 +57,16 @@ public class ControlLogService {
             String command = selectRule.getActionCommand();
             log.info("actoutor:{}, command:{}", actoutor.getDeviceName(), command);
 
-            boolean shouldAct = selectRule != null && compare(selectRule.getConditionOp(), value, selectRule.getThresholdValue());
+            //3. 센서에 넘어온 실시간 측정값 sensorValue와 DB에 저장된 임계값 threshold 비교
+            boolean shouldAct = compare(selectRule.getConditionOp(), value, selectRule.getThresholdValue());
 
             if (shouldAct) {
                 log.info("조건 확인: 센서값={}, 연산자='{}', 임계값={}, 결과={}",
                         value, selectRule.getConditionOp(), selectRule.getThresholdValue(),
                         compare(selectRule.getConditionOp(), value, selectRule.getThresholdValue()));
-                //1. 자동제어 발행 대상일 경우 (조도 or 수위)
+                //3-1. 자동제어 발행 대상일 경우 (조도 or 수위)
                 if ("LIGHT".equals(modelType) || "PH".equals(modelType)) {
+                    //mqtt로 전달
                     mqttCommandPublisher.sendCommand(actoutor, command);
 
                     log.info("자동제어 mqtt 명령어 발행: sensor={}, value={}, 조건: '{} {}', -> actuator={}, command={}",
@@ -88,7 +91,6 @@ public class ControlLogService {
                     log.info("modelType:{}, source:{}", modelType, source);
                     //물이 0 or 1일 때 각각의 알림 전달(알림 로직 추가)
                     if (value.compareTo(BigDecimal.ZERO) == 0) {
-                        // 물을 채워달라는 알림
                         //  notificationService.handleControlLogCreated("물을 채워주세요");
                         log.info("물을 채워주세요 알림 전송완료");
                     } else if (BigDecimal.ONE.compareTo(value)==0) {
@@ -105,8 +107,6 @@ public class ControlLogService {
     }
 
     private boolean compare(String op,BigDecimal sensorValue, BigDecimal threshold){
-
-        //2. 센서에 넘어온 실시간 측정값 sensorValue와 DB에 저장된 임계값 threshold 비교
         //연산자 문자열 op에 따라 비교해서 true/false 결과를 반환
         //op==">"라면 sensorValue > threshold일 때 true
         return switch (op){
