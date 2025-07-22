@@ -11,6 +11,8 @@ import com.farmtastic.farm.repository.SensorLogRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,12 +36,10 @@ public class SensorLogService {
             .orElseThrow(() -> new EntityNotFoundException(
                 "Device not found with id: " + logDto.getDeviceId()));
 
-        BigDecimal currentThreshold = automationRuleRepository
-                .findBySensorAndIsActiveTrue(device)
-                .stream()
-                .findFirst() // List에서 첫 번째 요소만 가져옴
+        BigDecimal currentThreshold = Optional.ofNullable(
+                        automationRuleRepository.findBySensorAndIsActiveTrue(device))
                 .map(AutomationRule::getThresholdValue)
-                .orElse(null); // 규칙이 없으면 null
+                .orElse(null); // 또는 orElse(BigDecimal.ZERO) 등
 
         SensorLog newSensorLog = SensorLog.builder()
                 .device(device)
@@ -67,12 +67,10 @@ public class SensorLogService {
                 deviceRepository.findByZoneZoneNameAndModelType(zoneName, modelType)
                     .ifPresent(device -> {
 
-                        BigDecimal currentThreshold = automationRuleRepository
-                                .findBySensorAndIsActiveTrue(device)
-                                .stream()
-                                .findFirst()
+                        BigDecimal currentThreshold = Optional.ofNullable(
+                                        automationRuleRepository.findBySensorAndIsActiveTrue(device))
                                 .map(AutomationRule::getThresholdValue)
-                                .orElse(null);
+                                .orElse(null); // 또는 orElse(BigDecimal.ZERO) 등
 
                         // SensorLog 저장
                         SensorLog sensorLog = SensorLog.builder()
@@ -84,6 +82,7 @@ public class SensorLogService {
                         sensorLogRepository.save(sensorLog);
 
                         // 6. (중요) 해당 센서에 대한 자동화 규칙 검사 및 실행 로직 호출
+
                         controlLogService.evaluateSensor(device, value);
 
 

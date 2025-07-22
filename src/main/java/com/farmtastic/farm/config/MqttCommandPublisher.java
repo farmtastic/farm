@@ -14,12 +14,13 @@ public class MqttCommandPublisher {
 
     private final MessageChannel mqttOutboundChannel   ;
 
-    //actoator와 명령어를 받아 mqtt 토픽으로 전송하는 메소드
+    //3. actoator와 명령어를 받아 mqtt 토픽으로 전송하는 메소드
     public void sendCommand(Device actoutor, String command){
 
-        if (actoutor != null || actoutor.getDeviceName()==null){
+        if (actoutor == null || actoutor.getDeviceName()==null){
             throw new IllegalArgumentException("actuator or dvice == null");
         }
+        //4. ex) farm/control/zone-A/water_pump or farm/control/zone-A/led로 전달
         String deviceName = actoutor.getDeviceName().toLowerCase().trim();
         String topic = "farm/control/zone-A/" + deviceName;
 
