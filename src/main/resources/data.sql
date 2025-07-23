@@ -5,8 +5,12 @@ VALUES ('zone-A', '메인 재배 구역', NOW());
 
 -- Device 데이터 추가 (수위, 조도, PH 센서)
 -- 아래 INSERT 문들은 위에서 생성된 zone_id = 1 을 참조합니다.
+-- 'WATER_LEVEL' 대신 'WATER_LEVEL_TOP'과 'WATER_LEVEL_BOTTOM'으로 명확하게 구분하여 2개의 디바이스를 추가합니다.
 INSERT INTO devices (device_name, d_type, model_type, installed_at, zone_id)
-VALUES ('water-level-sensor-1', 'SENSOR', 'WATER_LEVEL', NOW(), 1);
+VALUES ('water-level-top-sensor', 'SENSOR', 'WATER_LEVEL_TOP', NOW(), 1);
+
+INSERT INTO devices (device_name, d_type, model_type, installed_at, zone_id)
+VALUES ('water-level-bottom-sensor', 'SENSOR', 'WATER_LEVEL_BOTTOM', NOW(), 1);
 
 INSERT INTO devices (device_name, d_type, model_type, installed_at, zone_id)
 VALUES ('light-sensor-1', 'SENSOR', 'LIGHT', NOW(), 1);
