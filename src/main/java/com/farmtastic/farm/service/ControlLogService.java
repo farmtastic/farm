@@ -86,17 +86,18 @@ public class ControlLogService {
             }
             //modelType이 물일 때 DB에 저장되는 source 변경
             switch (modelType) {
-                case "WATER_LEVEL" -> {
+                case "WATER_LEVEL_BOTTOM" -> {
                     source = ControlSource.MANUAL_OVERRIDE;
                     log.info("modelType:{}, source:{}", modelType, source);
                     //물이 0 or 1일 때 각각의 알림 전달(알림 로직 추가)
-                    if (value.compareTo(BigDecimal.ZERO) == 0) {
+                    if (value.compareTo(BigDecimal.ZERO) == 1) {
                         //  notificationService.handleControlLogCreated("물을 채워주세요");
                         log.info("물을 채워주세요 알림 전송완료");
-                    } else if (BigDecimal.ONE.compareTo(value)==0) {
-                        //  notificationService.handleControlLogCreated("물을 빼주세요");
-                        log.info("물을 빼주세요 알림 전송완료");
                     }
+//                    else if (BigDecimal.ONE.compareTo(value)==0) {
+//                        //  notificationService.handleControlLogCreated("물을 빼주세요");
+//                        log.info("물을 빼주세요 알림 전송완료");
+//                    }
                 }
             }
 
