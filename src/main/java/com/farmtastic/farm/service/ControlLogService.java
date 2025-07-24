@@ -104,11 +104,11 @@ public class ControlLogService {
                     }
 
                 }
-               
 
-        }else {
-            log.warn("활성화된 자동제어 규칙이 존재하지 않음: sensor={}", sensorDevice.getDeviceName());
+            } else {
+                log.warn("활성화된 자동제어 규칙이 존재하지 않음: sensor={}", sensorDevice.getDeviceName());
+            }
         }
-    }
 
+    }
 }
