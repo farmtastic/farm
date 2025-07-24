@@ -75,15 +75,6 @@ public class ControlLogService {
                         logEntity.setReason(String.format("센서 '%s'의 값이 %.2f로 임계값  %.2f을 초과하여 자동 제어 실행",
                                 sensorDevice.getDeviceName(), value, threshold));
                         this.createLog(logEntity);
-
-                        // MQTT로 명령어 전달
-                        mqttCommandPublisher.sendCommand(actuator, command);
-
-                        log.info("자동제어 MQTT 명령어 발행: sensor={}, value={}, 조건: '{} {}', -> actuator={}, command={}",
-                                sensorDevice.getDeviceName(), value,
-                                rule.getThresholdValue(),
-                                actuator.getDeviceName(), command
-                        );
                     } else {
                         String command = modelType + "_ON";
 
