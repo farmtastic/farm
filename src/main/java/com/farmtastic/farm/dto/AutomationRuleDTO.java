@@ -29,10 +29,8 @@ public class AutomationRuleDTO {
                 .ruleId(rule.getRuleId().intValue())
                 .ruleName(rule.getRuleName())
                 .sensorId(rule.getSensor().getDeviceId().intValue())
-                .conditionOp(rule.getConditionOp())
                 .threshold(rule.getThresholdValue())
                 .actuatorId(rule.getActuator().getDeviceId().intValue())
-                .command(rule.getActionCommand())
                 .active(rule.getIsActive())
                 .build();
     }
