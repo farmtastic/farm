@@ -73,6 +73,8 @@ public class ControlLogService {
                         logEntity.setCommand(command);
                         logEntity.setLogTime(LocalDateTime.now());
                         logEntity.setSource(ControlSource.AUTOMATION_RULE);
+                        logEntity.setReason(String.format("센서 '%s'의 값이 %.2f로 임계값  %.2f을 초과하여 자동 제어 실행",
+                                sensorDevice.getDeviceName(), value, threshold));
                         controlLogRepository.save(logEntity);
 
                         // MQTT로 명령어 전달
@@ -106,7 +108,7 @@ public class ControlLogService {
 
          
                
-            }
+
         }else {
             log.warn("활성화된 자동제어 규칙이 존재하지 않음: sensor={}", sensorDevice.getDeviceName());
         }

@@ -30,6 +30,9 @@ public class ControlLog {
     @Column(nullable = false)
     private ControlSource source;
 
+    @Column(length = 255)
+    private String reason;
+
     // ControlLogs(N) -> Device(1) 관계
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "device_id", nullable = false)
