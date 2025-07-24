@@ -27,8 +27,9 @@ public class NotificationService {
         // 1. 사용자 친화적인 알림 메시지 생성
         String formattedTime = controlLog.getLogTime()
             .format(DateTimeFormatter.ofPattern("MM월 dd일 HH:mm"));
-        String message = String.format("%s, '%s' 장치가 '%s' 명령을 수행했습니다. (원인: %s)",
+        String message = String.format("%s, %s 했습니다.'%s' 장치가 '%s' 명령을 수행했습니다. (원인: %s)",
             formattedTime,
+            controlLog.getReason(),
             controlLog.getDevice().getDeviceName(),
             controlLog.getCommand(),
             controlLog.getSource().toString()
