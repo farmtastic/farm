@@ -22,9 +22,6 @@ public class AutomationRule {
     @Column(name = "rule_name", nullable = false, length = 100)
     private String ruleName;
 
-    @Column(name = "condition_op", nullable = false, length = 10)
-    private String conditionOp; // 예: ">", "<", "=="
-
     @Column(name = "threshold_value", nullable = false, precision = 10, scale = 2)
     private BigDecimal thresholdValue;
 
@@ -48,7 +45,6 @@ public class AutomationRule {
     public void update(String ruleName, String conditionOp, BigDecimal thresholdValue,
                        String actionCommand, Device sensor, Device actuator, Boolean isActive) {
         this.ruleName = ruleName;
-        this.conditionOp = conditionOp;
         this.thresholdValue = thresholdValue;
         this.actionCommand = actionCommand;
         this.sensor = sensor;

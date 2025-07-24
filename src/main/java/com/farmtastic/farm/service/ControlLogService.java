@@ -58,12 +58,12 @@ public class ControlLogService {
             log.info("actoutor:{}, command:{}", actoutor.getDeviceName(), command);
 
             //3. 센서에 넘어온 실시간 측정값 sensorValue와 DB에 저장된 임계값 threshold 비교
-            boolean shouldAct = compare(selectRule.getConditionOp(), value, selectRule.getThresholdValue());
+            boolean shouldAct = compare(value, selectRule.getThresholdValue());
 
             if (shouldAct) {
                 log.info("조건 확인: 센서값={}, 연산자='{}', 임계값={}, 결과={}",
-                        value, selectRule.getConditionOp(), selectRule.getThresholdValue(),
-                        compare(selectRule.getConditionOp(), value, selectRule.getThresholdValue()));
+                        value, selectRule.getThresholdValue(),
+                        compare(value, selectRule.getThresholdValue()));
                 //3-1. 자동제어 발행 대상일 경우 (조도 or 수위)
                 if ("LIGHT".equals(modelType) || "PH".equals(modelType)) {
                     //mqtt로 전달
@@ -71,7 +71,7 @@ public class ControlLogService {
 
                     log.info("자동제어 mqtt 명령어 발행: sensor={}, value={}, 조건: '{} {}', -> actuator={}, command={}",
                             sensorDevice.getDeviceName(), value,
-                            selectRule.getConditionOp(), selectRule.getThresholdValue(),
+                            selectRule.getThresholdValue(),
                             selectRule.getActuator().getDeviceName(), selectRule.getActionCommand()
                     );
                 }
@@ -106,7 +106,7 @@ public class ControlLogService {
 
     }
 
-    private boolean compare(String op,BigDecimal sensorValue, BigDecimal threshold){
+    private boolean compare(BigDecimal sensorValue, BigDecimal threshold){
         //연산자 문자열 op에 따라 비교해서 true/false 결과를 반환
         //op==">"라면 sensorValue > threshold일 때 true
         return switch (op){
