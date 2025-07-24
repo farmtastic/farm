@@ -35,7 +35,7 @@ VALUES ('조명 자동 조절', '>', 350.0, 'LED_OFF', true, 3, 6);
 
 -- 'PH 센서(device_id=2)'에 대한 [비활성화된] 규칙
 INSERT INTO automation_rules (rule_name, condition_op, threshold_value, action_command, is_active, sensor_id, actuator_id)
-VALUES ('ph 자동 조절', '>', 500.0, 'WATER_PUMP_ON', true, 4, 5);
+VALUES ('ph 자동 조절', '<', 3.0, 'WATER_PUMP_ON', true, 4, 5);
 
 
 
