@@ -8,7 +8,9 @@ import com.farmtastic.farm.domain.enums.ControlSource;
 import com.farmtastic.farm.event.ControlLogCreatedEvent;
 import com.farmtastic.farm.repository.AutomationRuleRepository;
 import com.farmtastic.farm.repository.ControlLogRepository;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -50,11 +52,19 @@ public class ControlLogService {
 
         // 2. 검색된 규칙 목록의 유무 확인 (null이 아니면서 비어있지 않은지)
         if (activeRules != null && !activeRules.isEmpty()) {
+            Set<Device> commandedActuators = new HashSet<>();
 
-            if ("LIGHT".equals(modelType) || "PH".equals(modelType)) {
+            if ("WATER_LEVEL_TOP".equals(modelType) || "WATER_LEVEL_BOTTOM".equals(modelType)) {
+
+            } else if ("LIGHT".equals(modelType) || "PH".equals(modelType)) {
                 for (AutomationRule rule : activeRules) {
                     BigDecimal threshold = rule.getThresholdValue();
                     Device actuator = rule.getActuator();
+
+                    if (commandedActuators.contains(actuator)) {
+                        continue;
+
+                    }
 
                     log.info("검사 규칙: '{}', 임계값: {}, 액추에이터: {}", rule.getRuleName(),
                         rule.getThresholdValue(), rule.getActuator().getDeviceName());
@@ -81,6 +91,9 @@ public class ControlLogService {
                                 sensorDevice.getDeviceName(), value, threshold));
                         this.createLog(logEntity);
 
+                        // 명령을 보냈으므로, 이 액추에이터를 기록 (추가된 부분 3)
+                        commandedActuators.add(actuator);
+
                     } else {
                         String command = modelType + "_ON";
 
@@ -100,6 +113,9 @@ public class ControlLogService {
                             String.format("센서 '%s'의 값이 %.2f로 임계값  %.2f을 초과하여 자동 제어 실행",
                                 sensorDevice.getDeviceName(), value, threshold));
                         this.createLog(controlLog);
+
+                        // 명령을 보냈으므로, 이 액추에이터를 기록 (추가된 부분 3)
+                        commandedActuators.add(actuator);
                     }
 
                 }
