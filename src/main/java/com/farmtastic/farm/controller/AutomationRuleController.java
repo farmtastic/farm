@@ -39,6 +39,7 @@ public class AutomationRuleController {
     public ResponseEntity<AutomationRuleDTO> insertRule(@RequestBody AutomationRuleDTO dto){
         log.info("rule insert");
         AutomationRuleDTO rule = automationRuleService.createRule(dto);
+        log.info("규칙 생성{}", rule);
         return ResponseEntity.ok(rule);
     }
 
@@ -47,6 +48,7 @@ public class AutomationRuleController {
     public ResponseEntity<AutomationRuleDTO> updateRule(@RequestBody AutomationRuleDTO dto, @PathVariable Long id){
         log.info("rule update");
         AutomationRuleDTO updateRule = automationRuleService.updateRule(dto, id);
+        log.info("규칙 수정{}", updateRule);
         return ResponseEntity.ok(updateRule);
     }
 
