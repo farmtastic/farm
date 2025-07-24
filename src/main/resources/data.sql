@@ -29,13 +29,13 @@ VALUES ('led-1', 'ACTUATOR', 'LED', NOW(), 1); -- device_id = 5 예상
 
 -- '조도 센서(device_id=2)'에 대한 [활성화된] 규칙
 INSERT INTO automation_rules (rule_name, condition_op, threshold_value, action_command, is_active, sensor_id, actuator_id)
-VALUES ('조명 자동 조절', '<', 100.0, 'LED_ON', true, 2, 5);
+VALUES ('조명 자동 조절', '<', 100.0, 'LED_ON', true, 3, 6);
 INSERT INTO automation_rules (rule_name, condition_op, threshold_value, action_command, is_active, sensor_id, actuator_id)
-VALUES ('조명 자동 조절', '>', 350.0, 'LED_OFF', true, 2, 5);
+VALUES ('조명 자동 조절', '>', 350.0, 'LED_OFF', true, 3, 6);
 
 -- 'PH 센서(device_id=2)'에 대한 [비활성화된] 규칙
 INSERT INTO automation_rules (rule_name, condition_op, threshold_value, action_command, is_active, sensor_id, actuator_id)
-VALUES ('ph 자동 조절', '>', 500.0, 'WATER_PUMP_ON', true, 3, 4);
+VALUES ('ph 자동 조절', '>', 500.0, 'WATER_PUMP_ON', true, 4, 5);
 
 
 
