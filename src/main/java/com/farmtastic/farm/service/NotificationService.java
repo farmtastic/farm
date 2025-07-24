@@ -34,6 +34,9 @@ public class NotificationService {
             controlLog.getSource().toString()
         );
 
+        log.info(message);
+
+
         // 2. 알림 엔티티 생성 및 저장
         Notification notification = Notification.builder()
             .message(message)

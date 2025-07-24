@@ -85,7 +85,7 @@ public class ControlLogService {
                     controlLog.setSource(ControlSource.AUTOMATION_RULE); // 자동제어 규칙에 의한 실행
                     controlLog.setDevice(actuator);
                     controlLog.setLogTime(LocalDateTime.now());
-                    controlLogRepository.save(controlLog);
+                    this.createLog(controlLog);
                 }
             } // 반복문 종료
 
