@@ -18,10 +18,8 @@ public class AutomationRuleDTO {
     private int ruleId;
     private String ruleName;
     private int sensorId;
-    private String conditionOp;
     private BigDecimal threshold;
     private int actuatorId;
-    private String command;
     private Boolean active;
 
     public static AutomationRuleDTO fromEntity(AutomationRule rule) {

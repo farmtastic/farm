@@ -39,8 +39,8 @@ public class AutomationRule {
     private Device actuator;
 
 
-    public void update(String ruleName, String conditionOp, BigDecimal thresholdValue,
-                       String actionCommand, Device sensor, Device actuator, Boolean isActive) {
+    public void update(String ruleName, BigDecimal thresholdValue,
+                       Device sensor, Device actuator, Boolean isActive) {
         this.ruleName = ruleName;
         this.thresholdValue = thresholdValue;
         this.sensor = sensor;
