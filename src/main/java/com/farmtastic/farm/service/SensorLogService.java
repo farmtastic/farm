@@ -36,10 +36,11 @@ public class SensorLogService {
             .orElseThrow(() -> new EntityNotFoundException(
                 "Device not found with id: " + logDto.getDeviceId()));
 
-        BigDecimal currentThreshold = Optional.ofNullable(
-                        automationRuleRepository.findBySensorAndIsActiveTrue(device))
-                .map(AutomationRule::getThresholdValue)
-                .orElse(null); // 또는 orElse(BigDecimal.ZERO) 등
+        BigDecimal currentThreshold = automationRuleRepository.findBySensorAndIsActiveTrue(device)
+            .stream() // 리스트를 스트림으로 변환
+            .findFirst() // 스트림의 첫 번째 항목을 찾음 (결과: Optional<AutomationRule>)
+            .map(AutomationRule::getThresholdValue) // 항목이 있다면, ThresholdValue를 가져옴
+            .orElse(null); // 항목이 없다면(리스트가 비었다면) null을 반환
 
         SensorLog newSensorLog = SensorLog.builder()
                 .device(device)
@@ -67,10 +68,11 @@ public class SensorLogService {
                 deviceRepository.findByZoneZoneNameAndModelType(zoneName, modelType)
                     .ifPresent(device -> {
 
-                        BigDecimal currentThreshold = Optional.ofNullable(
-                                        automationRuleRepository.findBySensorAndIsActiveTrue(device))
-                                .map(AutomationRule::getThresholdValue)
-                                .orElse(null); // 또는 orElse(BigDecimal.ZERO) 등
+                        BigDecimal currentThreshold = automationRuleRepository.findBySensorAndIsActiveTrue(device)
+                            .stream() // 리스트를 스트림으로 변환
+                            .findFirst() // 스트림의 첫 번째 항목을 찾음 (결과: Optional<AutomationRule>)
+                            .map(AutomationRule::getThresholdValue) // 항목이 있다면, ThresholdValue를 가져옴
+                            .orElse(null); // 항목이 없다면(리스트가 비었다면) null을 반환
 
                         // SensorLog 저장
                         SensorLog sensorLog = SensorLog.builder()
