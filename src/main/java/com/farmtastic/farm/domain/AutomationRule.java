@@ -25,9 +25,6 @@ public class AutomationRule {
     @Column(name = "threshold_value", nullable = false, precision = 10, scale = 2)
     private BigDecimal thresholdValue;
 
-    @Column(name = "action_command", nullable = false, length = 500)
-    private String actionCommand; // 예: "ON", "OFF"
-
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
@@ -46,7 +43,6 @@ public class AutomationRule {
                        String actionCommand, Device sensor, Device actuator, Boolean isActive) {
         this.ruleName = ruleName;
         this.thresholdValue = thresholdValue;
-        this.actionCommand = actionCommand;
         this.sensor = sensor;
         this.actuator = actuator;
         this.isActive = isActive;

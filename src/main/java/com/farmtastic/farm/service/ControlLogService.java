@@ -8,6 +8,7 @@ import com.farmtastic.farm.domain.enums.ControlSource;
 import com.farmtastic.farm.event.ControlLogCreatedEvent;
 import com.farmtastic.farm.repository.AutomationRuleRepository;
 import com.farmtastic.farm.repository.ControlLogRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -36,86 +37,66 @@ public class ControlLogService {
         // 2. 저장이 완료되면 이벤트를 발행
         eventPublisher.publishEvent(new ControlLogCreatedEvent(controlLog));
     }
-    
-    
+
+
 
     public void evaluateSensor(Device sensorDevice, BigDecimal value) {
         log.info(" 규칙과 측정값 비교");
 
-        //1. 해당 센서를 기준으로 활성화된 자동제어 규칙 조회 (ph, 조도, 수위 검색)
-        AutomationRule selectRule = automationRuleRepository.findBySensorAndIsActiveTrue(sensorDevice);
+        // 1. 해당 센서를 기준으로 활성화된 자동제어 규칙 '목록' 조회
+        List<AutomationRule> activeRules = automationRuleRepository.findBySensorAndIsActiveTrue(sensorDevice);
 
-        //2. 검색된 규칙의 유무 확인
-        if (selectRule != null) {
-            log.info("센서로 검색된 규칙이름:{}, 임계값:{}, actoutor:{}", selectRule.getRuleName(), selectRule.getThresholdValue(), selectRule.getActuator().getDeviceName() );
+        String modelType = sensorDevice.getModelType().name();
 
-            String modelType = sensorDevice.getModelType().name();
-            ControlSource source = ControlSource.AUTOMATION_RULE;
-            log.info("modelType:{}, source:{}", modelType, source);
+        // 2. 검색된 규칙 목록의 유무 확인 (null이 아니면서 비어있지 않은지)
+        if (activeRules != null && !activeRules.isEmpty()) {
 
-            Device actoutor = selectRule.getActuator();
-            String command = selectRule.getActionCommand();
-            log.info("actoutor:{}, command:{}", actoutor.getDeviceName(), command);
+            if ("LIGHT".equals(modelType) || "PH".equals(modelType)) {
+                for (AutomationRule rule : activeRules) {
+                    BigDecimal threshold = rule.getThresholdValue();
+                    Device actuator = rule.getActuator();
 
-            //3. 센서에 넘어온 실시간 측정값 sensorValue와 DB에 저장된 임계값 threshold 비교
-            boolean shouldAct = compare(value, selectRule.getThresholdValue());
+                    log.info("검사 규칙: '{}', 임계값: {}, 액추에이터: {}", rule.getRuleName(), rule.getThresholdValue(), rule.getActuator().getDeviceName());
 
-            if (shouldAct) {
-                log.info("조건 확인: 센서값={}, 연산자='{}', 임계값={}, 결과={}",
-                        value, selectRule.getThresholdValue(),
-                        compare(value, selectRule.getThresholdValue()));
-                //3-1. 자동제어 발행 대상일 경우 (조도 or 수위)
-                if ("LIGHT".equals(modelType) || "PH".equals(modelType)) {
-                    //mqtt로 전달
-                    mqttCommandPublisher.sendCommand(actoutor, command);
+                    // 조건: 센서값 > 임계값
+                    if (value.compareTo(threshold) > 0) {
+                        String command = modelType + "_ON";
 
-                    log.info("자동제어 mqtt 명령어 발행: sensor={}, value={}, 조건: '{} {}', -> actuator={}, command={}",
-                            sensorDevice.getDeviceName(), value,
-                            selectRule.getThresholdValue(),
-                            selectRule.getActuator().getDeviceName(), selectRule.getActionCommand()
-                    );
-                }
+                        mqttCommandPublisher.sendCommand(actuator, command);
 
-                //로그 DB에 저장
-                ControlLog log = new ControlLog();
-                log.setCommand(command);
-                log.setSource(source);
-                log.setDevice(actoutor);
-                log.setLogTime(LocalDateTime.now());
-                controlLogRepository.save(log);
-            }
-            //modelType이 물일 때 DB에 저장되는 source 변경
-            switch (modelType) {
-                case "WATER_LEVEL" -> {
-                    source = ControlSource.MANUAL_OVERRIDE;
-                    log.info("modelType:{}, source:{}", modelType, source);
-                    //물이 0 or 1일 때 각각의 알림 전달(알림 로직 추가)
-                    if (value.compareTo(BigDecimal.ZERO) == 0) {
-                        //  notificationService.handleControlLogCreated("물을 채워주세요");
-                        log.info("물을 채워주세요 알림 전송완료");
-                    } else if (BigDecimal.ONE.compareTo(value)==0) {
-                        //  notificationService.handleControlLogCreated("물을 빼주세요");
-                        log.info("물을 빼주세요 알림 전송완료");
+                        log.info("자동제어 발행: sensor={}, value={}, threshold={}, actuator={}, command={}",
+                                sensorDevice.getDeviceName(), value, threshold, actuator.getDeviceName(), command);
+
+                        // 제어 로그 저장
+                        ControlLog logEntity = new ControlLog();
+                        logEntity.setDevice(actuator);
+                        logEntity.setCommand(command);
+                        logEntity.setLogTime(LocalDateTime.now());
+                        logEntity.setSource(ControlSource.AUTOMATION_RULE);
+                        controlLogRepository.save(logEntity);
+
+                        // MQTT로 명령어 전달
+                        mqttCommandPublisher.sendCommand(actuator, command);
+
+                        log.info("자동제어 MQTT 명령어 발행: sensor={}, value={}, 조건: '{} {}', -> actuator={}, command={}",
+                                sensorDevice.getDeviceName(), value,
+                                rule.getThresholdValue(),
+                                actuator.getDeviceName(), command
+                        );
+                    }else{
+                        String command = modelType + "_OFF";
+
+                        mqttCommandPublisher.sendCommand(actuator, command);
+
+                        log.info("자동제어 발행: sensor={}, value={}, threshold={}, actuator={}, command={}",
+                                sensorDevice.getDeviceName(), value, threshold, actuator);
                     }
+
                 }
             }
-
-        } else {
-            log.warn("자동제어 규칙이 존재하지 않음: sensor={}", sensorDevice.getDeviceName());
+        }else {
+            log.warn("활성화된 자동제어 규칙이 존재하지 않음: sensor={}", sensorDevice.getDeviceName());
         }
-
     }
 
-    private boolean compare(BigDecimal sensorValue, BigDecimal threshold){
-        //연산자 문자열 op에 따라 비교해서 true/false 결과를 반환
-        //op==">"라면 sensorValue > threshold일 때 true
-        return switch (op){
-            case ">" -> sensorValue.compareTo(threshold) > 0;
-            case "<" -> sensorValue.compareTo(threshold) < 0;
-            case ">=" -> sensorValue.compareTo(threshold) >= 0;
-            case "<=" -> sensorValue.compareTo(threshold) <= 0;
-            case "==" -> sensorValue.compareTo(threshold) == 0;
-            default -> false;
-        };
-    }
 }
