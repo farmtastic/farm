@@ -2,9 +2,8 @@ package com.farmtastic.farm.config;
 
 import com.farmtastic.farm.domain.Device;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -12,12 +11,16 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
-@Slf4j
+// @RequiredArgsConstructor
 public class MqttCommandPublisher {
 
-    private static final Logger log = LoggerFactory.getLogger(MqttCommandPublisher.class);
-    private final MessageChannel mqttOutboundChannel   ;
+    private final MessageChannel mqttOutboundChannel;
+
+    // 생성자를 직접 작성하고, 파라미터에 @Qualifier 추가
+    @Autowired
+    public MqttCommandPublisher(@Qualifier("mqttOutboundChannel") MessageChannel mqttOutboundChannel) {
+        this.mqttOutboundChannel = mqttOutboundChannel;
+    }
 
     //3. actoator와 명령어를 받아 mqtt 토픽으로 전송하는 메소드
     public void sendCommand(Device actoutor, String command){
@@ -34,6 +37,5 @@ public class MqttCommandPublisher {
                 .setHeader(MqttHeaders.QOS, 1)
                 .build();
         mqttOutboundChannel.send(message);
-        log.info("자동제어 message:{}", message);
     }
 }

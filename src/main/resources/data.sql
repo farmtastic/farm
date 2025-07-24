@@ -5,8 +5,12 @@ VALUES ('zone-A', '메인 재배 구역', NOW());
 
 -- Device 데이터 추가 (수위, 조도, PH 센서)
 -- 아래 INSERT 문들은 위에서 생성된 zone_id = 1 을 참조합니다.
+-- 'WATER_LEVEL' 대신 'WATER_LEVEL_TOP'과 'WATER_LEVEL_BOTTOM'으로 명확하게 구분하여 2개의 디바이스를 추가합니다.
 INSERT INTO devices (device_name, d_type, model_type, installed_at, zone_id)
-VALUES ('water-level-sensor-1', 'SENSOR', 'WATER_LEVEL', NOW(), 1);
+VALUES ('water-level-top-sensor', 'SENSOR', 'WATER_LEVEL_TOP', NOW(), 1);
+
+INSERT INTO devices (device_name, d_type, model_type, installed_at, zone_id)
+VALUES ('water-level-bottom-sensor', 'SENSOR', 'WATER_LEVEL_BOTTOM', NOW(), 1);
 
 INSERT INTO devices (device_name, d_type, model_type, installed_at, zone_id)
 VALUES ('light-sensor-1', 'SENSOR', 'LIGHT', NOW(), 1);
@@ -25,11 +29,13 @@ VALUES ('led-1', 'ACTUATOR', 'LED', NOW(), 1); -- device_id = 5 예상
 
 -- '조도 센서(device_id=2)'에 대한 [활성화된] 규칙
 INSERT INTO automation_rules (rule_name, condition_op, threshold_value, action_command, is_active, sensor_id, actuator_id)
-VALUES ('조명 자동 조절', '>', 500.0, 'LED_ON', true, 2, 5);
+VALUES ('조명 자동 조절', '<', 100.0, 'LED_ON', true, 3, 6);
+INSERT INTO automation_rules (rule_name, condition_op, threshold_value, action_command, is_active, sensor_id, actuator_id)
+VALUES ('조명 자동 조절', '>', 350.0, 'LED_OFF', true, 3, 6);
 
 -- 'PH 센서(device_id=2)'에 대한 [비활성화된] 규칙
 INSERT INTO automation_rules (rule_name, condition_op, threshold_value, action_command, is_active, sensor_id, actuator_id)
-VALUES ('ph 자동 조절', '>', 500.0, 'WATER_PUMP_ON', true, 3, 4);
+VALUES ('ph 자동 조절', '>', 500.0, 'WATER_PUMP_ON', true, 4, 5);
 
 
 
