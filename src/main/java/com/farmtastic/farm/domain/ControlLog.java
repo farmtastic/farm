@@ -23,11 +23,11 @@ public class ControlLog {
     @Column(name = "log_time", updatable = false)
     private LocalDateTime logTime;
 
-    @Column(nullable = true, length = 50)
+    @Column( length = 50)
     private String command;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column()
     private ControlSource source;
 
     @Column(length = 255)
@@ -35,6 +35,6 @@ public class ControlLog {
 
     // ControlLogs(N) -> Device(1) 관계
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "device_id", nullable = false)
+    @JoinColumn(name = "device_id")
     private Device device;
 }
