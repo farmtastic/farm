@@ -90,9 +90,22 @@ public class ControlLogService {
 
                         log.info("자동제어 발행: sensor={}, value={}, threshold={}, actuator={}, command={}",
                                 sensorDevice.getDeviceName(), value, threshold, actuator);
+                      
+                      
+                    // 6. 제어 로그를 DB에 저장
+                    ControlLog controlLog = new ControlLog();
+                    controlLog.setCommand(command);
+                    controlLog.setSource(ControlSource.AUTOMATION_RULE); // 자동제어 규칙에 의한 실행
+                    controlLog.setDevice(actuator);
+                    controlLog.setLogTime(LocalDateTime.now());
+                    this.createLog(controlLog);
                     }
 
                 }
+            } // 반복문 종료
+
+         
+               
             }
         }else {
             log.warn("활성화된 자동제어 규칙이 존재하지 않음: sensor={}", sensorDevice.getDeviceName());
