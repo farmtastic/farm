@@ -49,14 +49,20 @@ public class ControlLogService {
             sensorDevice);
 
         String modelType = sensorDevice.getModelType().name();
-
+        if ("WATER_LEVEL_BOTTOM".equals(modelType) && value.compareTo(BigDecimal.ZERO) == 0) {
+            // 알림 메시지 생성
+            ControlLog logEntity = new ControlLog();
+            logEntity.setLogTime(LocalDateTime.now());
+            logEntity.setSource(ControlSource.AUTOMATION_RULE);
+            logEntity.setReason(
+                String.format("물이 부족합니다 물을 얼른 채워주세요!"));
+            this.createLog(logEntity);
+        }
         // 2. 검색된 규칙 목록의 유무 확인 (null이 아니면서 비어있지 않은지)
         if (activeRules != null && !activeRules.isEmpty()) {
             Set<Device> commandedActuators = new HashSet<>();
 
-            if ("WATER_LEVEL_TOP".equals(modelType) || "WATER_LEVEL_BOTTOM".equals(modelType)) {
-
-            } else if ("LIGHT".equals(modelType) || "PH".equals(modelType)) {
+            if ("LIGHT".equals(modelType) || "PH".equals(modelType)) {
                 for (AutomationRule rule : activeRules) {
                     BigDecimal threshold = rule.getThresholdValue();
                     Device actuator = rule.getActuator();

@@ -77,9 +77,7 @@ public class AutomationRuleService {
 
         rule.update(
             dto.getRuleName(),
-            dto.getConditionOp(),
             dto.getThreshold(),
-            dto.getCommand(),
             sensor,
             actuator,
             dto.getActive()

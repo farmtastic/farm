@@ -18,7 +18,7 @@ VALUES ('light-sensor-1', 'SENSOR', 'LIGHT', NOW(), 1);
 INSERT INTO devices (device_name, d_type, model_type, installed_at, zone_id)
 VALUES ('ph-sensor-1', 'SENSOR', 'PH', NOW(), 1);
 
--- 액추에이터 장비 (이후 device_id = 4, 5 으로 사용)
+-- 액추에이터 장비 (이후 device_id = 4, 5 으로 사용)µ
 INSERT INTO devices (device_name, d_type, model_type, installed_at, zone_id)
 VALUES ('water-pump-1', 'ACTUATOR', 'WATER_PUMP', NOW(), 1); -- device_id = 4 예상
 
