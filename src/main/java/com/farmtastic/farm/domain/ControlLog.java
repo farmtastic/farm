@@ -23,7 +23,7 @@ public class ControlLog {
     @Column(name = "log_time", updatable = false)
     private LocalDateTime logTime;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = true, length = 50)
     private String command;
 
     @Enumerated(EnumType.STRING)
