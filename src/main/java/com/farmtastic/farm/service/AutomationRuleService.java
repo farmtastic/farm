@@ -47,9 +47,7 @@ public class AutomationRuleService {
 
         AutomationRule rule = AutomationRule.builder()
             .ruleName(dto.getRuleName())
-            .conditionOp(dto.getConditionOp())
             .thresholdValue(dto.getThreshold())
-            .actionCommand(dto.getCommand())
             .isActive(dto.getActive())
             .sensor(sensor)
             .actuator(actuator)
