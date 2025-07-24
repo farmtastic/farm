@@ -39,12 +39,12 @@ public class ControlLogService {
     }
 
 
-
     public void evaluateSensor(Device sensorDevice, BigDecimal value) {
         log.info(" 규칙과 측정값 비교");
 
         // 1. 해당 센서를 기준으로 활성화된 자동제어 규칙 '목록' 조회
-        List<AutomationRule> activeRules = automationRuleRepository.findBySensorAndIsActiveTrue(sensorDevice);
+        List<AutomationRule> activeRules = automationRuleRepository.findBySensorAndIsActiveTrue(
+            sensorDevice);
 
         String modelType = sensorDevice.getModelType().name();
 
@@ -56,16 +56,19 @@ public class ControlLogService {
                     BigDecimal threshold = rule.getThresholdValue();
                     Device actuator = rule.getActuator();
 
-                    log.info("검사 규칙: '{}', 임계값: {}, 액추에이터: {}", rule.getRuleName(), rule.getThresholdValue(), rule.getActuator().getDeviceName());
+                    log.info("검사 규칙: '{}', 임계값: {}, 액추에이터: {}", rule.getRuleName(),
+                        rule.getThresholdValue(), rule.getActuator().getDeviceName());
 
                     // 조건: 센서값 > 임계값
                     if (value.compareTo(threshold) > 0) {
-                        String command = modelType + "_ON";
+                        String command = modelType + "_OFF";
 
                         mqttCommandPublisher.sendCommand(actuator, command);
 
-                        log.info("자동제어 발행: sensor={}, value={}, threshold={}, actuator={}, command={}",
-                                sensorDevice.getDeviceName(), value, threshold, actuator.getDeviceName(), command);
+                        log.info(
+                            "자동제어 발행: sensor={}, value={}, threshold={}, actuator={}, command={}",
+                            sensorDevice.getDeviceName(), value, threshold,
+                            actuator.getDeviceName(), command);
 
                         // 제어 로그 저장
                         ControlLog logEntity = new ControlLog();
@@ -73,44 +76,36 @@ public class ControlLogService {
                         logEntity.setCommand(command);
                         logEntity.setLogTime(LocalDateTime.now());
                         logEntity.setSource(ControlSource.AUTOMATION_RULE);
-                        logEntity.setReason(String.format("센서 '%s'의 값이 %.2f로 임계값  %.2f을 초과하여 자동 제어 실행",
+                        logEntity.setReason(
+                            String.format("센서 '%s'의 값이 %.2f로 임계값  %.2f을 초과하여 자동 제어 실행",
                                 sensorDevice.getDeviceName(), value, threshold));
                         this.createLog(logEntity);
 
-                        // MQTT로 명령어 전달
-                        mqttCommandPublisher.sendCommand(actuator, command);
-
-                        log.info("자동제어 MQTT 명령어 발행: sensor={}, value={}, 조건: '{} {}', -> actuator={}, command={}",
-                                sensorDevice.getDeviceName(), value,
-                                rule.getThresholdValue(),
-                                actuator.getDeviceName(), command
-                        );
-                    }else{
-                        String command = modelType + "_OFF";
+                    } else {
+                        String command = modelType + "_ON";
 
                         mqttCommandPublisher.sendCommand(actuator, command);
 
-                        log.info("자동제어 발행: sensor={}, value={}, threshold={}, actuator={}, command={}",
-                                sensorDevice.getDeviceName(), value, threshold, actuator);
-                      
-                      
-                    // 6. 제어 로그를 DB에 저장
-                    ControlLog controlLog = new ControlLog();
-                    controlLog.setCommand(command);
-                    controlLog.setSource(ControlSource.AUTOMATION_RULE); // 자동제어 규칙에 의한 실행
-                    controlLog.setDevice(actuator);
-                    controlLog.setLogTime(LocalDateTime.now());
-                    this.createLog(controlLog);
+                        log.info(
+                            "자동제어 발행: sensor={}, value={}, threshold={}, actuator={}",
+                            sensorDevice.getDeviceName(), value, threshold, actuator);
+
+                        // 6. 제어 로그를 DB에 저장
+                        ControlLog controlLog = new ControlLog();
+                        controlLog.setCommand(command);
+                        controlLog.setSource(ControlSource.AUTOMATION_RULE); // 자동제어 규칙에 의한 실행
+                        controlLog.setDevice(actuator);
+                        controlLog.setLogTime(LocalDateTime.now());
+                        controlLog.setReason(
+                            String.format("센서 '%s'의 값이 %.2f로 임계값  %.2f을 초과하여 자동 제어 실행",
+                                sensorDevice.getDeviceName(), value, threshold));
+                        this.createLog(controlLog);
                     }
 
                 }
             } // 반복문 종료
-
-         
-               
-
-        }else {
-            log.warn("활성화된 자동제어 규칙이 존재하지 않음: sensor={}", sensorDevice.getDeviceName());
+        } else {
+            log.info("활성화된 자동제어 규칙이 존재하지 않음: sensor={}", sensorDevice.getDeviceName());
         }
     }
 
